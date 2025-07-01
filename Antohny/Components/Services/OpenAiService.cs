@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
 namespace Antohny.Services
@@ -9,32 +10,60 @@ namespace Antohny.Services
     public class OpenAiService
     {
         private readonly HttpClient _httpClient;
+        private readonly string _apiKey;
 
-        public OpenAiService(HttpClient httpClient)
+        public OpenAiService(IConfiguration configuration)
         {
-            _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "TU_API_KEY_OPENAI");
+            _httpClient = new HttpClient();
+            _apiKey = configuration["OPENAI_API_KEY"];
         }
 
         public async Task<string> ObtenerRespuesta(string prompt)
         {
+            if (string.IsNullOrWhiteSpace(_apiKey))
+            {
+                return "API Key no configurada.";
+            }
+
             var requestBody = new
             {
                 model = "gpt-3.5-turbo",
-                messages = new[] {
+                messages = new[]
+                {
                     new { role = "user", content = prompt }
                 }
             };
 
-            var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+            var requestJson = JsonSerializer.Serialize(requestBody);
+            var content = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("v1/chat/completions", content);
-            var responseString = await response.Content.ReadAsStringAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
 
-            using var json = JsonDocument.Parse(responseString);
-            var result = json.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
+            try
+            {
+                var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
 
-            return result ?? "Sin respuesta";
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    return $"Error al llamar a OpenAI: {response.StatusCode} - {errorContent}";
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+
+                var respuesta = doc.RootElement
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
+
+                return respuesta ?? "Sin respuesta generada.";
+            }
+            catch (Exception ex)
+            {
+                return $"Excepción al llamar a OpenAI: {ex.Message}";
+            }
         }
     }
 }
