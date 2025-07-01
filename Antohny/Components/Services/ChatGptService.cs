@@ -13,7 +13,8 @@ namespace Antohny.Services
         public ChatGptService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://rendimasapp.onrender.com/"); // ✅ URL correcta del backend en Render
+            _httpClient.BaseAddress = new Uri("https://rendimasapp.onrender.com/");
+
         }
 
         public async Task<string> ObtenerRespuesta(string curso, string grado, string pregunta)
