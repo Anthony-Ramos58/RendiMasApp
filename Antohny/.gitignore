@@ -1,0 +1,26 @@
+﻿# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build
+bin/
+obj/
+
+# Git filter
+git-filter-repo.exe
+
+# Firebase
+.firebase/
+.firebaserc
+firebase.json
+
+# Otros
+*.log
+*.cache
+.env
+pglite-debug.log
+
+# Sistema
+*.DS_Store
+Thumbs.db

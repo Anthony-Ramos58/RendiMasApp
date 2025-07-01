@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-Antohny-a636182f-1d84-4f66-ab1e-cb40b1a55133</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+
+	  <PackageReference Include="Firebase.Auth" Version="1.0.0" />
+
+	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.12" />
+    <PackageReference Include="RestSharp" Version="110.2.0" />
+	  <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+<PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+	  
+    <PackageReference Include="System.Net.Http.Json" Version="9.0.6" />
+  </ItemGroup>
+
+</Project>

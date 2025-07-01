@@ -1,0 +1,205 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+@inject Antohny.Services.FirebaseLoginService FirebaseLoginService
+
+<h1 style="text-align:center; color:#007bff; margin-bottom: 30px;">
+    RendiMas
+</h1>
+
+@if (!isLoggedIn)
+{
+    <h3 style="color: #007bff; text-align: center; margin-bottom: 20px;">Login Anthony</h3>
+
+    <div style="max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <div class="btn-group mb-3 w-100" role="group" aria-label="Login/Register toggle">
+            <button class="btn @(isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = true">Login</button>
+            <button class="btn @(!isLogin ? "btn-success" : "btn-outline-success")" @onclick="() => isLogin = false">Registrar</button>
+        </div>
+
+        @if (isLogin)
+        {
+            <!-- Login Form -->
+            <div>
+                <div class="form-group mb-3">
+                    <label for="loginEmail"><i class="fa fa-envelope"></i> Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                        <input id="loginEmail" @bind="loginEmail" type="email" class="form-control" placeholder="email@empresa.com" />
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="loginPassword"><i class="fa fa-lock"></i> Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                        <input id="loginPassword" @bind="loginPassword" type="password" class="form-control" placeholder="********" />
+                    </div>
+                </div>
+
+                <button class="btn btn-primary w-100 mb-3" @onclick="LoginUser">Ingresar</button>
+                @if (!string.IsNullOrEmpty(loginError))
+                {
+                    <div class="alert alert-danger">@loginError</div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Register Form -->
+            <div>
+                <div class="form-group mb-3">
+                    <label for="registerFullName"><i class="fa fa-user"></i> Nombre completo</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-user"></i></span>
+                        <input id="registerFullName" @bind="registerFullName" type="text" class="form-control" placeholder="Tu nombre completo" />
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="registerEmail"><i class="fa fa-envelope"></i> Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                        <input id="registerEmail" @bind="registerEmail" type="email" class="form-control" placeholder="email@empresa.com" />
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="registerPassword"><i class="fa fa-lock"></i> Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                        <input id="registerPassword" @bind="registerPassword" type="password" class="form-control" placeholder="********" />
+                    </div>
+                </div>
+
+                <button class="btn btn-success w-100 mb-3" @onclick="RegisterUser">Registrar</button>
+                @if (!string.IsNullOrEmpty(registerError))
+                {
+                    <div class="alert alert-danger">@registerError</div>
+                }
+                @if (!string.IsNullOrEmpty(registerSuccess))
+                {
+                    <div class="alert alert-success">@registerSuccess</div>
+                }
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div style="text-align:center; margin-top: 100px;">
+        <h1 style="font-size: 4rem; color: #007bff;">¡Bienvenido, @loggedInUserFullName!</h1>
+        <button class="btn btn-danger mt-5" @onclick="LogoutUser">Cerrar sesión</button>
+    </div>
+}
+
+@code {
+    private bool isLogin = true;
+    private bool isLoggedIn = false;
+
+    private string loginEmail = "";
+    private string loginPassword = "";
+    private string loginError = "";
+
+    private string registerFullName = "";
+    private string registerEmail = "";
+    private string registerPassword = "";
+    private string registerError = "";
+    private string registerSuccess = "";
+
+    private string savedFullName = "";
+    private string loggedInUserFullName = "";
+
+    private async Task RegisterUser()
+    {
+        registerError = "";
+        registerSuccess = "";
+
+        if (string.IsNullOrWhiteSpace(registerFullName))
+        {
+            registerError = "El nombre es obligatorio.";
+            return;
+        }
+        if (!System.Text.RegularExpressions.Regex.IsMatch(registerFullName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+        {
+            registerError = "El nombre solo puede contener letras.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(registerEmail))
+        {
+            registerError = "El email es obligatorio.";
+            return;
+        }
+        if (!System.Text.RegularExpressions.Regex.IsMatch(registerEmail, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        {
+            registerError = "Ingrese un email válido.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(registerPassword))
+        {
+            registerError = "La contraseña es obligatoria.";
+            return;
+        }
+        if (registerPassword.Length != 6)
+        {
+            registerError = "La contraseña debe tener exactamente 6 caracteres.";
+            return;
+        }
+
+        try
+        {
+            var auth = await FirebaseLoginService.RegisterAsync(registerEmail, registerPassword, registerFullName);
+
+            if (auth.StartsWith("Error:"))
+            {
+                registerError = "Error al registrar: " + auth;
+                return;
+            }
+
+            registerSuccess = "Registrado con éxito.";
+            registerFullName = "";
+            registerEmail = "";
+            registerPassword = "";
+
+            // 🔕 Ya no redireccionamos aquí
+        }
+        catch (Exception ex)
+        {
+            registerError = ex.Message;
+        }
+    }
+
+    private async Task LoginUser()
+    {
+        loginError = "";
+
+        try
+        {
+            var token = await FirebaseLoginService.LoginAsync(loginEmail, loginPassword);
+
+            if (token.StartsWith("Error:"))
+            {
+                loginError = "Email o contraseña incorrectos.";
+                return;
+            }
+
+            loggedInUserFullName = savedFullName;
+            isLoggedIn = true;
+            loginEmail = "";
+            loginPassword = "";
+            Navigation.NavigateTo("/bienvenido");
+        }
+        catch
+        {
+            loginError = "Ocurrió un error al intentar iniciar sesión.";
+        }
+    }
+
+    private void LogoutUser()
+    {
+        isLoggedIn = false;
+        loggedInUserFullName = "";
+        isLogin = true;
+    }
+}

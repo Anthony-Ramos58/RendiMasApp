@@ -1,0 +1,24 @@
+﻿@page "/apitest"
+@inject HttpClient Http
+
+<h3>Test API desde Blazor</h3>
+
+<p>@resultado</p>
+
+<button @onclick="ProbarApi">Probar /api/chat/test</button>
+
+@code {
+    string resultado = "";
+
+    async Task ProbarApi()
+    {
+        try
+        {
+            resultado = await Http.GetStringAsync("https://localhost:7147/api/chat/test");
+        }
+        catch (Exception ex)
+        {
+            resultado = $"Error: {ex.Message}";
+        }
+    }
+}

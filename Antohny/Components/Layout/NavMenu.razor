@@ -1,0 +1,91 @@
+﻿@implements IDisposable
+
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar" style="background-color: white; color: black;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="" style="color: black;">Antohny</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" style="background-color: white; color: black;" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" style="color: black;">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true" style="color: black;"></span> 
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter" style="color: black;">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true" style="color: black;"></span> 
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="weather" style="color: black;">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true" style="color: black;"></span> 
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="auth" style="color: black;">
+                <span class="bi bi-lock-nav-menu" aria-hidden="true" style="color: black;"></span> 
+            </NavLink>
+        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Manage" style="color: black;">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true" style="color: black;"></span> @context.User.Identity?.Name
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                        <button type="submit" class="nav-link" style="color: black; background: none; border: none; padding: 0;">
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true" style="color: black;"></span> 
+                        </button>
+                    </form>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Register" style="color: black;">
+                        <span class="bi bi-person-nav-menu" aria-hidden="true" style="color: black;"></span> 
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Login" style="color: black;">
+                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true" style="color: black;"></span> 
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+</div>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
