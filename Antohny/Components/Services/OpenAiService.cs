@@ -9,13 +9,11 @@ namespace Antohny.Services
     public class OpenAiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string apiKey;
 
         public OpenAiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY")
-                ?? throw new InvalidOperationException("OPENAI_API_KEY no configurado.");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "TU_API_KEY_OPENAI");
         }
 
         public async Task<string> ObtenerRespuesta(string prompt)
@@ -30,20 +28,13 @@ namespace Antohny.Services
 
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            var response = await _httpClient.PostAsync("v1/chat/completions", content);
+            var responseString = await response.Content.ReadAsStringAsync();
 
-            var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
+            using var json = JsonDocument.Parse(responseString);
+            var result = json.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
 
-            if (!response.IsSuccessStatusCode)
-                return $"Error del servidor: {response.StatusCode}";
-
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            using var doc = await JsonDocument.ParseAsync(responseStream);
-            return doc.RootElement
-                      .GetProperty("choices")[0]
-                      .GetProperty("message")
-                      .GetProperty("content")
-                      .GetString() ?? "Sin respuesta.";
+            return result ?? "Sin respuesta";
         }
     }
 }

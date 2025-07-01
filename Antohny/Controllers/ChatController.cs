@@ -7,11 +7,11 @@ namespace Antohny.Controllers
     [Route("api/chat")]
     public class ChatController : ControllerBase
     {
-        private readonly ChatGptService _chatGptService;
+        private readonly OpenAiService _openAiService;
 
-        public ChatController(ChatGptService chatGptService)
+        public ChatController(OpenAiService openAiService)
         {
-            _chatGptService = chatGptService;
+            _openAiService = openAiService;
         }
 
         [HttpGet("test")]
@@ -30,7 +30,7 @@ namespace Antohny.Controllers
             }
 
             var prompt = $"[{request.Curso} - {request.Grado}] {request.Pregunta}";
-            var respuesta = await _chatGptService.ObtenerRespuesta(prompt);
+            var respuesta = await _openAiService.ObtenerRespuesta(prompt);
 
             return Ok(new { Respuesta = respuesta });
         }
