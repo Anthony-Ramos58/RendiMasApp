@@ -27,11 +27,13 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 // Servicios propios
 // ----------------------
 builder.Services.AddSingleton<FirebaseLoginService>();
+builder.Services.AddHttpClient<OpenAiService>();
+builder.Services.AddScoped<OpenAiService>(); // ✅ Registro necesario para inyectarlo en el controlador
 
 // HttpClient configurado para usar la API en Render
 builder.Services.AddHttpClient<ChatGptService>(client =>
 {
-    client.BaseAddress = new Uri("https://rendimasapp.onrender.com/"); // ← URL de tu backend en Render
+    client.BaseAddress = new Uri("https://rendimasapp.onrender.com/");
 });
 
 // ----------------------
@@ -44,7 +46,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://rendimasapp.onrender.com") // ← o cambia a tu frontend si lo separas
+        policy.WithOrigins("https://rendimasapp.onrender.com")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -95,22 +97,18 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Activar CORS
-app.UseCors("AllowFrontend");
+app.UseCors("AllowFrontend"); 
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
 
-// Mapeo de controladores para la API
 app.MapControllers();
 
-// Mapeo de componentes Blazor
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// Mapeo de endpoints de identidad
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();
