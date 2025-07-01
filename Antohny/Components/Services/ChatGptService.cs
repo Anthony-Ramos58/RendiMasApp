@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -12,31 +13,40 @@ namespace Antohny.Services
         public ChatGptService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri("https://rendimasapp.onrender.com/"); // URL de tu backend
         }
 
-        public async Task<string> ObtenerRespuesta(string prompt)
+        public async Task<string> ObtenerRespuesta(string curso, string grado, string pregunta)
         {
-            var requestBody = new
+            var request = new
             {
-                prompt = prompt
+                Curso = curso,
+                Grado = grado,
+                Pregunta = pregunta
             };
 
-            var requestContent = new StringContent(
-                JsonSerializer.Serialize(requestBody),
+            var content = new StringContent(
+                JsonSerializer.Serialize(request),
                 Encoding.UTF8,
                 "application/json"
             );
 
-            var response = await _httpClient.PostAsync("https://antohnyramos-leog.onrender.com/chat", requestContent);
+            try
+            {
+                var response = await _httpClient.PostAsync("api/chat", content);
+                if (!response.IsSuccessStatusCode)
+                    return $"Error del servidor: {response.StatusCode}";
 
-            if (!response.IsSuccessStatusCode)
-                return $"Error del servidor: no se pudo procesar la pregunta.";
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                var respuesta = doc.RootElement.GetProperty("Respuesta").GetString();
 
-            using var responseStream = await response.Content.ReadAsStreamAsync();
-            using var doc = await JsonDocument.ParseAsync(responseStream);
-            var content = doc.RootElement.GetProperty("respuesta").GetString();
-
-            return content ?? "Sin respuesta.";
-        } 
+                return respuesta ?? "Sin respuesta.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
     }
 }

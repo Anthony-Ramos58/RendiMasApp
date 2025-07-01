@@ -27,8 +27,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 // Servicios propios
 // ----------------------
 builder.Services.AddSingleton<FirebaseLoginService>();
-builder.Services.AddHttpClient<OpenAiService>();
-builder.Services.AddScoped<OpenAiService>(); // ✅ Registro necesario para inyectarlo en el controlador
+builder.Services.AddSingleton<OpenAiService>(); // ✅ Registro correcto
 
 // HttpClient configurado para usar la API en Render
 builder.Services.AddHttpClient<ChatGptService>(client =>
@@ -97,7 +96,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseCors("AllowFrontend"); 
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
