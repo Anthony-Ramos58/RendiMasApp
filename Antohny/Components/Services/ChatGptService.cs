@@ -13,7 +13,7 @@ namespace Antohny.Services
         public ChatGptService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://rendimasapp.onrender.com/"); // URL de tu backend
+            _httpClient.BaseAddress = new Uri("https://rendimasapp.onrender.com/"); // ✅ URL correcta del backend en Render
         }
 
         public async Task<string> ObtenerRespuesta(string curso, string grado, string pregunta)
@@ -35,7 +35,7 @@ namespace Antohny.Services
             {
                 var response = await _httpClient.PostAsync("api/chat", content);
                 if (!response.IsSuccessStatusCode)
-                    return $"Error del servidor: {response.StatusCode}";
+                    return $"Error del servidor: no se pudo procesar la pregunta.";
 
                 var json = await response.Content.ReadAsStringAsync();
                 using var doc = JsonDocument.Parse(json);
