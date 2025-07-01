@@ -5,40 +5,54 @@ using Antohny.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ----------------------
+// Servicios Blazor
+// ----------------------
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// ----------------------
+// Autenticación
+// ----------------------
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
+// ----------------------
+// Servicios propios
+// ----------------------
 builder.Services.AddSingleton<FirebaseLoginService>();
 
-// Registra HttpClient con base address vacío para inyectar en ChatGptService
-builder.Services.AddHttpClient<ChatGptService>();
+// HttpClient configurado para usar la API en Render
+builder.Services.AddHttpClient<ChatGptService>(client =>
+{
+    client.BaseAddress = new Uri("https://rendimasapp.onrender.com/"); // ← URL de tu backend en Render
+});
 
-// Ya no registramos dos veces el ChatGptService como Scoped y Singleton, solo HttpClient lo necesita
-// builder.Services.AddScoped<ChatGptService>(); // NO NECESARIO
-
-// Añadir controladores API
+// ----------------------
+// Controladores y API
+// ----------------------
 builder.Services.AddControllers();
 
-// CORS: permite al frontend llamar la API desde dominio distinto
+// CORS: si consumes desde otro dominio (opcional)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://tu-frontend-en-render.com") // Cambia a la URL real del frontend
+        policy.WithOrigins("https://rendimasapp.onrender.com") // ← o cambia a tu frontend si lo separas
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
 
+// ----------------------
+// Identity y DB
+// ----------------------
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -48,8 +62,10 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -59,6 +75,9 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+// ----------------------
+// Construcción de la app
+// ----------------------
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -76,7 +95,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Usar CORS antes de autenticación/autorización
+// Activar CORS
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
@@ -84,11 +103,14 @@ app.UseAuthorization();
 
 app.UseAntiforgery();
 
+// Mapeo de controladores para la API
 app.MapControllers();
 
+// Mapeo de componentes Blazor
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+// Mapeo de endpoints de identidad
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();
