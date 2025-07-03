@@ -35,11 +35,7 @@
         color: white;
     }
 
-    .form-control {
-        background-color: white;
-    }
-
-    select.form-select {
+    .form-control, select.form-select {
         background-color: white;
     }
 
@@ -154,32 +150,54 @@
 
     private async Task EnviarMensaje()
     {
-        if (string.IsNullOrWhiteSpace(mensajeUsuario)) return;
+        // 1️⃣ Validación en cliente
+        if (string.IsNullOrWhiteSpace(grado) || cursoSeleccionado == "Curso no seleccionado" || string.IsNullOrWhiteSpace(mensajeUsuario))
+        {
+            mensajes.Add(new Mensaje
+                {
+                    Rol = "RendiBot",
+                    Texto = "❗ Por favor selecciona grado, curso y escribe tu pregunta."
+                });
+            return;
+        }
 
         mensajes.Add(new Mensaje { Rol = "Tú", Texto = mensajeUsuario });
+        var request = new { curso = cursoSeleccionado, grado, pregunta = mensajeUsuario };
 
         try
         {
-            var request = new { curso = cursoSeleccionado, grado, pregunta = mensajeUsuario };
             var response = await Http.PostAsJsonAsync("https://rendimasapp.onrender.com/api/chat", request);
 
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadFromJsonAsync<RespuestaChat>();
 
-                if (json?.Respuesta != null && json.Respuesta.StartsWith("Corrección:"))
+                if (json?.Respuesta?.StartsWith("Corrección:") == true)
                 {
-                    await JS.InvokeVoidAsync("mostrarAlertaOrtografia", $"Se detectaron errores ortográficos. {json.Respuesta}");
-                    mensajes.Add(new Mensaje { Rol = "RendiBot", Texto = $"Parece que hubo errores ortográficos. {json.Respuesta}" });
+                    await JS.InvokeVoidAsync("mostrarAlertaOrtografia", json.Respuesta);
                 }
-                else
-                {
-                    mensajes.Add(new Mensaje { Rol = "RendiBot", Texto = json?.Respuesta ?? "No se obtuvo respuesta del servidor." });
-                }
+
+                mensajes.Add(new Mensaje
+                    {
+                        Rol = "RendiBot",
+                        Texto = json?.Respuesta ?? "No se obtuvo respuesta del servidor."
+                    });
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                mensajes.Add(new Mensaje
+                    {
+                        Rol = "RendiBot",
+                        Texto = "⚠️ La pregunta no pudo procesarse (verifica grado/curso)."
+                    });
             }
             else
             {
-                mensajes.Add(new Mensaje { Rol = "RendiBot", Texto = "Error del servidor: no se pudo procesar la pregunta." });
+                mensajes.Add(new Mensaje
+                    {
+                        Rol = "RendiBot",
+                        Texto = $"Error del servidor ({(int)response.StatusCode})."
+                    });
             }
         }
         catch (Exception ex)
@@ -187,7 +205,7 @@
             mensajes.Add(new Mensaje { Rol = "RendiBot", Texto = $"Excepción: {ex.Message}" });
         }
 
-        mensajeUsuario = "";
+        mensajeUsuario = ""; // limpia campo
     }
 
     private void OnEnter(KeyboardEventArgs e)
