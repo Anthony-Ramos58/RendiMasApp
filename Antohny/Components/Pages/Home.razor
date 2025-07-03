@@ -92,31 +92,32 @@
             <!-- Register Form -->
             <div>
                 <div class="form-group mb-3">
-                    <label for="registerFullName">👤 Nombre completo</label>
+                    <label for="registerFullName" style="color:white;">👤 Nombre completo</label>
                     <input id="registerFullName" @bind="registerFullName" type="text" class="form-control" placeholder="Tu nombre completo" />
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="registerEmail">📧 Email</label>
+                    <label for="registerEmail" style="color:white;">📧 Email</label>
                     <input id="registerEmail" @bind="registerEmail" type="email" class="form-control" placeholder="email@empresa.com" />
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="registerPassword">🔒 Contraseña</label>
+                    <label for="registerPassword" style="color:white;">🔒 Contraseña</label>
                     <input id="registerPassword" @bind="registerPassword" type="password" class="form-control" placeholder="********" />
                 </div>
 
-                <button class="btn btn-success w-100 mb-3" @onclick="RegisterUser">Registrar</button>
+                <button class="btn btn-success w-100 mb-3" @onclick="RegisterUser" style="border-radius: 6px;">Registrar</button>
 
                 @if (!string.IsNullOrEmpty(registerError))
                 {
-                    <div class="alert alert-warning text-center">@registerError</div>
+                    <div class="alert alert-warning text-center mt-2">@registerError</div>
                 }
                 @if (!string.IsNullOrEmpty(registerSuccess))
                 {
-                    <div class="alert alert-success text-center">@registerSuccess</div>
+                    <div class="alert alert-success text-center mt-2">@registerSuccess</div>
                 }
             </div>
+
         }
     </div>
 }

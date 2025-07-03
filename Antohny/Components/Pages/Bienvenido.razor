@@ -11,79 +11,114 @@
     /* Fondo azul oscuro para toda la app */
     body {
         background-color: #1e3257;
+        margin: 0;
+        padding: 0;
     }
 
-    /* Títulos, botones outline y enlaces en blanco para contraste */
-    h1, h5, .btn-outline-dark, a, label {
-        color: #fff;
+    /* Panel vidrio translúcido */
+    .glass-panel {
+        background-color: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 2rem;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        color: white;
     }
 
-    /* Botones primarios usan sus propios colores; no los tocamos */
+    h1, h5, label, p, a {
+        color: white;
+    }
+
+    .chat-box {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: white;
+    }
+
+    .form-control {
+        background-color: white;
+    }
+
+    select.form-select {
+        background-color: white;
+    }
+
+    .btn-outline-dark {
+        color: white;
+        border-color: white;
+    }
+
+        .btn-outline-dark:hover {
+            background-color: white;
+            color: #1e3257;
+        }
 </style>
 
-<!-- Contenedor principal -->
-<div style="background-color:#ffffffee; min-height:100vh; padding:2rem;">
-    <h1 class="text-center mb-3 text-@themeColor">
-        ¡Bienvenido a <strong>RendiMas</strong>!
-    </h1>
-    <p class="text-center text-muted mb-4">Tu asistente para tareas de secundaria</p>
+<!-- Fondo completo -->
+<div style="min-height: 100vh; padding: 2rem; background-color: #1e3257;">
+    <div class="glass-panel container">
+        <h1 class="text-center mb-3 text-@themeColor">
+            ¡Bienvenido a <strong>RendiMas</strong>!
+        </h1>
+        <p class="text-center mb-4">Tu asistente para tareas de secundaria</p>
 
-    <div class="row justify-content-center">
-        <!-- Selección de grado -->
-        <div class="col-md-3 mb-4">
-            <div class="card shadow p-3 border-top border-3 border-@themeColor bg-white">
-                <h5 class="text-center mb-2">Grado:</h5>
-                <select class="form-select" @bind="grado">
-                    <option disabled selected value="">-- Selecciona grado --</option>
-                    <option>1° de secundaria</option>
-                    <option>2° de secundaria</option>
-                    <option>3° de secundaria</option>
-                    <option>4° de secundaria</option>
-                    <option>5° de secundaria</option>
-                </select>
+        <div class="row justify-content-center">
+            <!-- Selección de grado -->
+            <div class="col-md-3 mb-4">
+                <div class="card shadow p-3 border-top border-3 border-@themeColor bg-white">
+                    <h5 class="text-center mb-2">Grado:</h5>
+                    <select class="form-select" @bind="grado">
+                        <option disabled selected value="">-- Selecciona grado --</option>
+                        <option>1° de secundaria</option>
+                        <option>2° de secundaria</option>
+                        <option>3° de secundaria</option>
+                        <option>4° de secundaria</option>
+                        <option>5° de secundaria</option>
+                    </select>
+                </div>
             </div>
-        </div>
 
-        <!-- Selección de curso -->
-        <div class="col-md-5 mb-4">
-            <div class="card shadow p-3 border-top border-3 border-@themeColor bg-white">
-                <h5 class="text-center mb-2">Curso:</h5>
-                <div class="d-flex justify-content-around flex-wrap gap-2">
-                    @foreach (var c in cursos)
-                    {
-                        <button class="btn btn-outline-@GetButtonStyle(c)" @onclick="() => SeleccionarCurso(c)">
-                            @c
-                        </button>
-                    }
+            <!-- Selección de curso -->
+            <div class="col-md-5 mb-4">
+                <div class="card shadow p-3 border-top border-3 border-@themeColor bg-white">
+                    <h5 class="text-center mb-2">Curso:</h5>
+                    <div class="d-flex justify-content-around flex-wrap gap-2">
+                        @foreach (var c in cursos)
+                        {
+                            <button class="btn btn-outline-@GetButtonStyle(c)" @onclick="() => SeleccionarCurso(c)">
+                                @c
+                            </button>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Chat académico -->
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow p-4 border-start border-4 border-@themeColor bg-white">
-                <h5 class="mb-3 text-@themeColor">🤖 Chat académico - @cursoSeleccionado</h5>
-                <div class="chat-box border rounded p-3 mb-3" style="height:250px; overflow-y:auto; background-color:#f9f9f9;">
-                    @foreach (var mensaje in mensajes)
-                    {
-                        <div class="mb-2">
-                            <strong>@mensaje.Rol:</strong> @mensaje.Texto
-                        </div>
-                    }
-                </div>
+        <!-- Chat académico -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow p-4 border-start border-4 border-@themeColor bg-white">
+                    <h5 class="mb-3 text-@themeColor">🤖 Chat académico - @cursoSeleccionado</h5>
+                    <div class="chat-box border rounded p-3 mb-3" style="height:250px; overflow-y:auto;">
+                        @foreach (var mensaje in mensajes)
+                        {
+                            <div class="mb-2">
+                                <strong>@mensaje.Rol:</strong> @mensaje.Texto
+                            </div>
+                        }
+                    </div>
 
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Pregunta algo..." @bind="mensajeUsuario" @onkeydown="OnEnter" />
-                    <button class="btn btn-@themeColor" @onclick="EnviarMensaje">Enviar</button>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Pregunta algo..." @bind="mensajeUsuario" @onkeydown="OnEnter" />
+                        <button class="btn btn-@themeColor" @onclick="EnviarMensaje">Enviar</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="text-center mt-4">
-        <a href="/" class="btn btn-outline-dark">🔙 Volver al inicio</a>
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-dark">🔙 salir</a>
+        </div>
     </div>
 </div>
 
@@ -126,8 +161,6 @@
         try
         {
             var request = new { curso = cursoSeleccionado, grado, pregunta = mensajeUsuario };
-
-            // 🔁 Cambia esta URL por la de tu API real en Render
             var response = await Http.PostAsJsonAsync("https://rendimasapp.onrender.com/api/chat", request);
 
             if (response.IsSuccessStatusCode)
@@ -137,19 +170,11 @@
                 if (json?.Respuesta != null && json.Respuesta.StartsWith("Corrección:"))
                 {
                     await JS.InvokeVoidAsync("mostrarAlertaOrtografia", $"Se detectaron errores ortográficos. {json.Respuesta}");
-                    mensajes.Add(new Mensaje
-                        {
-                            Rol = "RendiBot",
-                            Texto = $"Parece que hubo errores ortográficos. {json.Respuesta}"
-                        });
+                    mensajes.Add(new Mensaje { Rol = "RendiBot", Texto = $"Parece que hubo errores ortográficos. {json.Respuesta}" });
                 }
                 else
                 {
-                    mensajes.Add(new Mensaje
-                        {
-                            Rol = "RendiBot",
-                            Texto = json?.Respuesta ?? "No se obtuvo respuesta del servidor."
-                        });
+                    mensajes.Add(new Mensaje { Rol = "RendiBot", Texto = json?.Respuesta ?? "No se obtuvo respuesta del servidor." });
                 }
             }
             else
