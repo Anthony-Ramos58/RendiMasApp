@@ -8,14 +8,12 @@
      Estilos locales
      ──────────────────────── -->
 <style>
-    /* Fondo azul oscuro para toda la app */
     body {
         background-color: #1e3257;
         margin: 0;
         padding: 0;
     }
 
-    /* Panel vidrio translúcido */
     .glass-panel {
         background-color: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(12px);
@@ -32,7 +30,7 @@
 
     .chat-box {
         background-color: rgba(255, 255, 255, 0.15);
-        color: white;
+        color: black;
     }
 
     .form-control, select.form-select {
@@ -99,7 +97,7 @@
                         @foreach (var mensaje in mensajes)
                         {
                             <div class="mb-2">
-                                <strong>@mensaje.Rol:</strong> @mensaje.Texto
+                                <strong style="color:@(mensaje.Rol == "RendiBot" ? GetColorByCurso() : "black")">@mensaje.Rol:</strong> <span style="color:black">@mensaje.Texto</span>
                             </div>
                         }
                     </div>
@@ -124,7 +122,7 @@
     private string mensajeUsuario = "";
     private List<Mensaje> mensajes = new();
     private string themeColor = "primary";
-    private List<string> cursos = new() { "Matemáticas", "Comunicación", "Historia", "Inglés" };
+    private List<string> cursos = new() { "Matemáticas", "Comunicación", "Historia" };
 
     private void SeleccionarCurso(string curso)
     {
@@ -134,7 +132,6 @@
             "Matemáticas" => "success",
             "Comunicación" => "danger",
             "Historia" => "warning",
-            "Inglés" => "info",
             _ => "primary"
         };
 
@@ -146,11 +143,18 @@
             });
     }
 
+    private string GetColorByCurso() => themeColor switch
+    {
+        "success" => "#198754", // verde
+        "danger" => "#dc3545",  // rojo
+        "warning" => "#ffc107", // amarillo
+        _ => "#0d6efd"           // azul primario
+    };
+
     private string GetButtonStyle(string curso) => curso == cursoSeleccionado ? themeColor : "secondary";
 
     private async Task EnviarMensaje()
     {
-        // 1️⃣ Validación en cliente
         if (string.IsNullOrWhiteSpace(grado) || cursoSeleccionado == "Curso no seleccionado" || string.IsNullOrWhiteSpace(mensajeUsuario))
         {
             mensajes.Add(new Mensaje
@@ -205,7 +209,7 @@
             mensajes.Add(new Mensaje { Rol = "RendiBot", Texto = $"Excepción: {ex.Message}" });
         }
 
-        mensajeUsuario = ""; // limpia campo
+        mensajeUsuario = "";
     }
 
     private void OnEnter(KeyboardEventArgs e)
