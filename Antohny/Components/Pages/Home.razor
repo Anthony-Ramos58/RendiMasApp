@@ -2,31 +2,65 @@
 @inject NavigationManager Navigation
 @inject Antohny.Services.FirebaseLoginService FirebaseLoginService
 
-<!-- ────────────────────────
-     Estilos en el mismo archivo
-     ──────────────────────── -->
+<!-- Estilos personalizados -->
 <style>
-    /* Fondo azul oscuro para TODA la página */
     body {
         background-color: #1e3257;
+        color: white;
     }
 
-    /* Opcional: texto principal en blanco para mejor contraste */
-    h1, h3, label, .btn, .alert {
-        color: #fff;
+    .form-box {
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid #ffffff33;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-control, .form-select {
+        background-color: #fff;
+        border-radius: 6px;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn-outline-primary, .btn-outline-success {
+        color: white;
+        border-color: white;
+    }
+
+        .btn-outline-primary:hover, .btn-outline-success:hover {
+            background-color: white;
+            color: #1e3257;
+        }
+
+    .alert {
+        background-color: #ffc107;
+        color: #000;
+        font-weight: bold;
     }
 </style>
 
-<h1 style="text-align:center; margin-bottom: 30px;">
+<h1 style="text-align:center; margin-bottom: 30px; color: white;">
     RendiMas
 </h1>
 
 @if (!isLoggedIn)
 {
-    <h3 style="text-align: center; margin-bottom: 20px;">Login Anthony</h3>
+    <h3 style="text-align: center; margin-bottom: 20px; color: white;">Login Anthony</h3>
 
-    <div style="max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); background-color:#ffffffee;">
-        <div class="btn-group mb-3 w-100" role="group" aria-label="Login/Register toggle">
+    <div class="form-box" style="max-width: 400px; margin: auto;">
+        <div class="btn-group mb-3 w-100" role="group">
             <button class="btn @(isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = true">Login</button>
             <button class="btn @(!isLogin ? "btn-success" : "btn-outline-success")" @onclick="() => isLogin = false">Registrar</button>
         </div>
@@ -36,25 +70,20 @@
             <!-- Login Form -->
             <div>
                 <div class="form-group mb-3">
-                    <label for="loginEmail"><i class="fa fa-envelope"></i> Email</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
-                        <input id="loginEmail" @bind="loginEmail" type="email" class="form-control" placeholder="email@empresa.com" />
-                    </div>
+                    <label for="loginEmail">📧 Email</label>
+                    <input id="loginEmail" @bind="loginEmail" type="email" class="form-control" placeholder="email@empresa.com" />
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="loginPassword"><i class="fa fa-lock"></i> Contraseña</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                        <input id="loginPassword" @bind="loginPassword" type="password" class="form-control" placeholder="********" />
-                    </div>
+                    <label for="loginPassword">🔒 Contraseña</label>
+                    <input id="loginPassword" @bind="loginPassword" type="password" class="form-control" placeholder="********" />
                 </div>
 
                 <button class="btn btn-primary w-100 mb-3" @onclick="LoginUser">Ingresar</button>
+
                 @if (!string.IsNullOrEmpty(loginError))
                 {
-                    <div class="alert alert-danger">@loginError</div>
+                    <div class="alert alert-warning text-center">@loginError</div>
                 }
             </div>
         }
@@ -63,37 +92,29 @@
             <!-- Register Form -->
             <div>
                 <div class="form-group mb-3">
-                    <label for="registerFullName"><i class="fa fa-user"></i> Nombre completo</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-user"></i></span>
-                        <input id="registerFullName" @bind="registerFullName" type="text" class="form-control" placeholder="Tu nombre completo" />
-                    </div>
+                    <label for="registerFullName">👤 Nombre completo</label>
+                    <input id="registerFullName" @bind="registerFullName" type="text" class="form-control" placeholder="Tu nombre completo" />
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="registerEmail"><i class="fa fa-envelope"></i> Email</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
-                        <input id="registerEmail" @bind="registerEmail" type="email" class="form-control" placeholder="email@empresa.com" />
-                    </div>
+                    <label for="registerEmail">📧 Email</label>
+                    <input id="registerEmail" @bind="registerEmail" type="email" class="form-control" placeholder="email@empresa.com" />
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="registerPassword"><i class="fa fa-lock"></i> Contraseña</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
-                        <input id="registerPassword" @bind="registerPassword" type="password" class="form-control" placeholder="********" />
-                    </div>
+                    <label for="registerPassword">🔒 Contraseña</label>
+                    <input id="registerPassword" @bind="registerPassword" type="password" class="form-control" placeholder="********" />
                 </div>
 
                 <button class="btn btn-success w-100 mb-3" @onclick="RegisterUser">Registrar</button>
+
                 @if (!string.IsNullOrEmpty(registerError))
                 {
-                    <div class="alert alert-danger">@registerError</div>
+                    <div class="alert alert-warning text-center">@registerError</div>
                 }
                 @if (!string.IsNullOrEmpty(registerSuccess))
                 {
-                    <div class="alert alert-success">@registerSuccess</div>
+                    <div class="alert alert-success text-center">@registerSuccess</div>
                 }
             </div>
         }
@@ -102,7 +123,7 @@
 else
 {
     <div style="text-align:center; margin-top: 100px;">
-        <h1 style="font-size: 4rem;">¡Bienvenido, @loggedInUserFullName!</h1>
+        <h1 style="font-size: 3rem;">¡Bienvenido, @loggedInUserFullName!</h1>
         <button class="btn btn-danger mt-5" @onclick="LogoutUser">Cerrar sesión</button>
     </div>
 }
