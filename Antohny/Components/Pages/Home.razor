@@ -2,15 +2,30 @@
 @inject NavigationManager Navigation
 @inject Antohny.Services.FirebaseLoginService FirebaseLoginService
 
-<h1 style="text-align:center; color:#007bff; margin-bottom: 30px;">
+<!-- ────────────────────────
+     Estilos en el mismo archivo
+     ──────────────────────── -->
+<style>
+    /* Fondo azul oscuro para TODA la página */
+    body {
+        background-color: #1e3257;
+    }
+
+    /* Opcional: texto principal en blanco para mejor contraste */
+    h1, h3, label, .btn, .alert {
+        color: #fff;
+    }
+</style>
+
+<h1 style="text-align:center; margin-bottom: 30px;">
     RendiMas
 </h1>
 
 @if (!isLoggedIn)
 {
-    <h3 style="color: #007bff; text-align: center; margin-bottom: 20px;">Login Anthony</h3>
+    <h3 style="text-align: center; margin-bottom: 20px;">Login Anthony</h3>
 
-    <div style="max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <div style="max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); background-color:#ffffffee;">
         <div class="btn-group mb-3 w-100" role="group" aria-label="Login/Register toggle">
             <button class="btn @(isLogin ? "btn-primary" : "btn-outline-primary")" @onclick="() => isLogin = true">Login</button>
             <button class="btn @(!isLogin ? "btn-success" : "btn-outline-success")" @onclick="() => isLogin = false">Registrar</button>
@@ -87,7 +102,7 @@
 else
 {
     <div style="text-align:center; margin-top: 100px;">
-        <h1 style="font-size: 4rem; color: #007bff;">¡Bienvenido, @loggedInUserFullName!</h1>
+        <h1 style="font-size: 4rem;">¡Bienvenido, @loggedInUserFullName!</h1>
         <button class="btn btn-danger mt-5" @onclick="LogoutUser">Cerrar sesión</button>
     </div>
 }
@@ -161,8 +176,6 @@ else
             registerFullName = "";
             registerEmail = "";
             registerPassword = "";
-
-            // 🔕 Ya no redireccionamos aquí
         }
         catch (Exception ex)
         {

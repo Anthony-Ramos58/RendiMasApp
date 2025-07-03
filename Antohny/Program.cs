@@ -32,7 +32,7 @@ builder.Services.AddSingleton<OpenAiService>(); // ✅ Registro correcto
 // HttpClient configurado para usar la API en Render
 builder.Services.AddHttpClient<ChatGptService>(client =>
 {
-    client.BaseAddress = new Uri("https://rendimasapp.onrender.com/");
+    client.BaseAddress = new Uri("https://rendimasapp.onrender.com/"); // ✅ CORRECTO
 });
 
 // ----------------------

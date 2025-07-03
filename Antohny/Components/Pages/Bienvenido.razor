@@ -4,9 +4,28 @@
 @inject IJSRuntime JS
 @inject HttpClient Http
 
-<!-- Contenedor -->
-<div style="background-color: white; min-height: 100vh; padding: 2rem;">
-    <h1 class="text-center mb-3 text-@themeColor">¡Bienvenido a <strong>RendiMas</strong>!</h1>
+<!-- ────────────────────────
+     Estilos locales
+     ──────────────────────── -->
+<style>
+    /* Fondo azul oscuro para toda la app */
+    body {
+        background-color: #1e3257;
+    }
+
+    /* Títulos, botones outline y enlaces en blanco para contraste */
+    h1, h5, .btn-outline-dark, a, label {
+        color: #fff;
+    }
+
+    /* Botones primarios usan sus propios colores; no los tocamos */
+</style>
+
+<!-- Contenedor principal -->
+<div style="background-color:#ffffffee; min-height:100vh; padding:2rem;">
+    <h1 class="text-center mb-3 text-@themeColor">
+        ¡Bienvenido a <strong>RendiMas</strong>!
+    </h1>
     <p class="text-center text-muted mb-4">Tu asistente para tareas de secundaria</p>
 
     <div class="row justify-content-center">
@@ -46,7 +65,7 @@
         <div class="col-md-8">
             <div class="card shadow p-4 border-start border-4 border-@themeColor bg-white">
                 <h5 class="mb-3 text-@themeColor">🤖 Chat académico - @cursoSeleccionado</h5>
-                <div class="chat-box border rounded p-3 mb-3" style="height: 250px; overflow-y: auto; background-color: #f9f9f9;">
+                <div class="chat-box border rounded p-3 mb-3" style="height:250px; overflow-y:auto; background-color:#f9f9f9;">
                     @foreach (var mensaje in mensajes)
                     {
                         <div class="mb-2">
@@ -96,10 +115,7 @@
             });
     }
 
-    private string GetButtonStyle(string curso)
-    {
-        return curso == cursoSeleccionado ? themeColor : "secondary";
-    }
+    private string GetButtonStyle(string curso) => curso == cursoSeleccionado ? themeColor : "secondary";
 
     private async Task EnviarMensaje()
     {
@@ -109,12 +125,7 @@
 
         try
         {
-            var request = new
-            {
-                curso = cursoSeleccionado,
-                grado = grado,
-                pregunta = mensajeUsuario
-            };
+            var request = new { curso = cursoSeleccionado, grado, pregunta = mensajeUsuario };
 
             // 🔁 Cambia esta URL por la de tu API real en Render
             var response = await Http.PostAsJsonAsync("https://rendimasapp.onrender.com/api/chat", request);
@@ -126,7 +137,6 @@
                 if (json?.Respuesta != null && json.Respuesta.StartsWith("Corrección:"))
                 {
                     await JS.InvokeVoidAsync("mostrarAlertaOrtografia", $"Se detectaron errores ortográficos. {json.Respuesta}");
-
                     mensajes.Add(new Mensaje
                         {
                             Rol = "RendiBot",
@@ -154,7 +164,6 @@
 
         mensajeUsuario = "";
     }
-
 
     private void OnEnter(KeyboardEventArgs e)
     {
