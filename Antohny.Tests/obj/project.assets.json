@@ -5616,11 +5616,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny\\Antohny.Tests\\Antohny.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny (2)\\Antohny\\Antohny.Tests\\Antohny.Tests.csproj",
       "projectName": "Antohny.Tests",
-      "projectPath": "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny\\Antohny.Tests\\Antohny.Tests.csproj",
+      "projectPath": "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny (2)\\Antohny\\Antohny.Tests\\Antohny.Tests.csproj",
       "packagesPath": "C:\\Users\\xxx\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny\\Antohny.Tests\\obj\\",
+      "outputPath": "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny (2)\\Antohny\\Antohny.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -5642,8 +5642,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny\\Antohny\\Antohny.csproj": {
-              "projectPath": "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny\\Antohny\\Antohny.csproj"
+            "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny (2)\\Antohny\\Antohny\\Antohny.csproj": {
+              "projectPath": "C:\\Users\\xxx\\Desktop\\finlllllallalla\\segunda parte vase de dato\\Antohny (2)\\Antohny\\Antohny\\Antohny.csproj"
             }
           }
         }
