@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Antohny.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+42b3aeaec74f475405724c922790f799e98d9f4a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+88f1df29b40eff726ce5e420a2fced21a423c81e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Antohny.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Antohny.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
